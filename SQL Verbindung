@@ -1,0 +1,68 @@
+//Hallo
+using System;
+using System.Data.SqlClient;
+
+namespace SQLConnectionExample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string server = "DEIN_SERVER_NAME"; // Hier den Namen oder die IP-Adresse des SQL-Servers eintragen
+            string database = "DEINE_DATABSE_NAME"; // Hier den Namen der Datenbank eintragen
+            string username = "DEIN_BENUTZERNAME"; // Hier den Benutzernamen eintragen (falls erforderlich)
+            string password = "DEIN_PASSWORT"; // Hier das Passwort eintragen (falls erforderlich)
+
+            // Verbindungszeichenfolge erstellen
+            string connectionString = $"Data Source={server};Initial Catalog={database};User ID={username};Password={password};";
+
+            // Verbindung zur Datenbank erstellen
+            SqlConnection connection = new SqlConnection(connectionString);
+
+            try
+            {
+                // Verbindung zur Datenbank öffnen
+                connection.Open();
+                
+                if (connection.State == System.Data.ConnectionState.Open)
+                {
+                    Console.WriteLine("Verbindung zur SQL-Datenbank hergestellt!");
+
+                    // Beispiel für eine SQL-Abfrage
+                    string sqlQuery = "SELECT * FROM DeineTabelle";
+
+                    // SQL-Befehl erstellen
+                    SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                    // Daten aus der Datenbank abrufen
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    // Ergebnisse verarbeiten
+                    while (reader.Read())
+                    {
+                        // Hier kannst du die einzelnen Spaltenwerte auslesen
+                        int id = (int)reader["ID"];
+                        string name = (string)reader["Name"];
+                        int alter = (int)reader["Alter"];
+
+                        Console.WriteLine($"ID: {id}, Name: {name}, Alter: {alter}");
+                    }
+                    reader.Close();
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Fehler beim Herstellen der Verbindung zur SQL-Datenbank:");
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Verbindung schließen, wenn sie geöffnet wurde
+                if (connection.State == System.Data.ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+        }
+    }
+}
